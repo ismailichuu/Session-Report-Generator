@@ -2,211 +2,63 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session Report Generator</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: auto;
-    max-width: 600px;
-    padding: 20px;
-    background: #fafafa;
-  }
-
-  h2 {
-    text-align: center;
-  }
-
-  .section {
-    margin-bottom: 18px;
-    padding: 12px;
-    background: #fff;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-  }
-
-  input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-
-  button {
-    background: #2c2c2c;
-    color: white;
-    cursor: pointer;
-  }
-
-  button:hover {
-    opacity: 0.85;
-  }
-
-  #students label {
-    display: block;
-    padding: 6px;
-  }
-
-  #output-box {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f0f0f0;
-    white-space: pre-wrap;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Session Report Generator</h2>
+<div class="container">
+  <div class="header">
+    <h1>📋 Session Report Generator</h1>
+    <p>Create professional session reports in seconds</p>
+  </div>
 
-<div class="section">
-  <label>Date:</label>
-  <input type="date" id="date">
+  <div class="content">
+    <div class="section">
+      <div class="section-title">📅 Session Date</div>
+      <input type="date" id="date">
+    </div>
+
+    <div class="section">
+      <div class="section-title">🗣 Topic / Activity</div>
+      <input type="text" id="topic" placeholder="e.g., Debate on AI Ethics">
+      <textarea id="topicDescription" placeholder="Brief description of the topic or activity (optional)" rows="2" style="margin-top: 10px;"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-title">👥 Manage Students</div>
+      <textarea id="studentInput" placeholder="Enter student names separated by commas"></textarea>
+      <div class="input-hint">First time? Add your student list here</div>
+      <button class="btn-secondary" onclick="saveStudents()">💾 Save Students</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✅ Mark Attendance</div>
+      <div id="students"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔄 Alternate Attendees</div>
+      <input type="text" id="alternate" placeholder="e.g., John Doe, Jane Smith">
+      <div class="input-hint">Students from other groups (optional)</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🎥 Recording Link</div>
+      <input type="text" id="tldvLink" placeholder="https://tldv.io/meeting/...">
+      <div class="input-hint">TL;DV or other meeting recording link (optional)</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="generateReport()">✨ Generate Report</button>
+      <button class="btn-success" onclick="copyReport()">📋 Copy to Clipboard</button>
+    </div>
+
+    <div id="output-box"></div>
+  </div>
 </div>
-
-<div class="section">
-  <label>Topic / Activity Name:</label>
-  <input type="text" id="topic" placeholder="Debate / Presentation / etc">
-  <label style="margin-top: 10px; display: block;">Topic Description (Optional):</label>
-  <textarea id="topicDescription" placeholder="Brief description of the topic/activity" rows="3"></textarea>
-</div>
-
-<div class="section">
-  <label><strong>Students List</strong> (first time only):</label>
-  <textarea id="studentInput" placeholder="Enter names separated by comma"></textarea>
-  <button onclick="saveStudents()">Save Students</button>
-</div>
-
-<div id="students" class="section"></div>
-
-<div class="section">
-  <label>Alternate Session (Optional):</label>
-  <textarea id="alternate" placeholder="Name1, Name2"></textarea>
-</div>
-
-<div class="section">
-  <label>TL;DV Meeting Link (Optional):</label>
-  <input type="text" id="tldvLink" placeholder="https://tldv.io/meeting/...">
-</div>
-
-<button onclick="generateReport()">Generate Report</button>
-<button onclick="copyReport()">Copy to Clipboard</button>
-
-<div id="output-box"></div>
-
-<script>
-  const batch = "BCR73 - Group 2";
-  const trainer = "Hrithik P S";
-  const coordinator = "Prithiviraj";
-  const preparedBy = "Mohammed Ismail C N";
-
-  function saveStudents() {
-    const names = document.getElementById("studentInput").value
-      .split(",")
-      .map(n => n.trim())
-      .filter(n => n !== "");
-    
-    if (names.length === 0) {
-      alert("Enter valid names.");
-      return;
-    }
-
-    localStorage.setItem("students", JSON.stringify(names));
-    loadStudents();
-    alert("Students saved!");
-  }
-
-  function loadStudents() {
-    const stored = localStorage.getItem("students");
-    if (!stored) return;
-    
-    const students = JSON.parse(stored);
-    const container = document.getElementById("students");
-    container.innerHTML = "<strong>Mark Attendance:</strong><br>";
-
-    students.forEach((name, index) => {
-      container.innerHTML += `
-        <label>
-          <input type="checkbox" id="s_${index}" checked> ${name}
-        </label>
-      `;
-    });
-  }
-
-  function generateReport() {
-    const stored = localStorage.getItem("students");
-    if (!stored) return alert("Save students first!");
-
-    const students = JSON.parse(stored);
-    const date = document.getElementById("date").value;
-    const topic = document.getElementById("topic").value;
-    const topicDescription = document.getElementById("topicDescription").value;
-    const tldvLink = document.getElementById("tldvLink").value.trim();
-    const alternate = document.getElementById("alternate").value
-      .split(",")
-      .map(n => n.trim())
-      .filter(n => n !== "");
-
-    const attendees = [];
-    const absentees = [];
-
-    students.forEach((name, i) => {
-      const checked = document.getElementById(`s_${i}`).checked;
-      checked ? attendees.push(name) : absentees.push(name);
-    });
-    
-    // Add alternate attendees to the main attendees list
-    if (alternate.length > 0) {
-      attendees.push(...alternate);
-    }
-
-    const format = (arr, isAbsentee = false) => {
-      if (!arr.length) return "None";
-      const emoji = isAbsentee ? "🚫" : "👤";
-      return arr.map(n => `${emoji} ${n}`).join("\n");
-    };
-
-    const report = `
-🌟 Session Report 🌟
-📅 Date: ${date}
-🖥 Batch: ${batch}
-🕒 Time: 3:00 PM – 4:00 PM
-👨‍🏫 Trainer: ${trainer}
-🤝 Coordinator: ${coordinator}
-📝 Report Prepared by: ${preparedBy}
-
-🗣 Activity: ${topic}
-${topicDescription ? `📝 Description: ${topicDescription}
-` : ''}
-
-------------------------------------
-✅ Attendees:
-${format(attendees)}
-------------------------------------
-🚫 Absentees:
-${format(absentees, true)}
-
-
-${tldvLink ? `🎥 TL;DV Recording: ${tldvLink}` : ''}
-`;
-
-    document.getElementById("output-box").innerText = report;
-  }
-
-  function copyReport() {
-    const text = document.getElementById("output-box").innerText;
-    if (!text.trim()) return alert("Generate the report first.");
-
-    navigator.clipboard.writeText(text);
-    alert("Copied! Paste directly into WhatsApp 🚀");
-  }
-
-  loadStudents();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
