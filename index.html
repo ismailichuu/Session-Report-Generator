@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Session Report Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: auto;
+    max-width: 600px;
+    padding: 20px;
+    background: #fafafa;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  .section {
+    margin-bottom: 18px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  input, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+
+  button {
+    background: #2c2c2c;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  #students label {
+    display: block;
+    padding: 6px;
+  }
+
+  #output-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f0f0;
+    white-space: pre-wrap;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>Session Report Generator</h2>
+
+<div class="section">
+  <label>Date:</label>
+  <input type="date" id="date">
+</div>
+
+<div class="section">
+  <label>Topic / Activity Name:</label>
+  <input type="text" id="topic" placeholder="Debate / Presentation / etc">
+</div>
+
+<div class="section">
+  <label><strong>Students List</strong> (first time only):</label>
+  <textarea id="studentInput" placeholder="Enter names separated by comma"></textarea>
+  <button onclick="saveStudents()">Save Students</button>
+</div>
+
+<div id="students" class="section"></div>
+
+<div class="section">
+  <label>Alternate Session (Optional):</label>
+  <textarea id="alternate" placeholder="Name1, Name2"></textarea>
+</div>
+
+<button onclick="generateReport()">Generate Report</button>
+<button onclick="copyReport()">Copy to Clipboard</button>
+
+<div id="output-box"></div>
+
+<script>
+  const batch = "BCR73 - Group 2";
+  const trainer = "Hrithik P S";
+  const coordinator = "Prithiviraj";
+  const preparedBy = "Mohammed Ismail C N";
+
+  function saveStudents() {
+    const names = document.getElementById("studentInput").value
+      .split(",")
+      .map(n => n.trim())
+      .filter(n => n !== "");
+    
+    if (names.length === 0) {
+      alert("Enter valid names.");
+      return;
+    }
+
+    localStorage.setItem("students", JSON.stringify(names));
+    loadStudents();
+    alert("Students saved!");
+  }
+
+  function loadStudents() {
+    const stored = localStorage.getItem("students");
+    if (!stored) return;
+    
+    const students = JSON.parse(stored);
+    const container = document.getElementById("students");
+    container.innerHTML = "<strong>Mark Attendance:</strong><br>";
+
+    students.forEach((name, index) => {
+      container.innerHTML += `
+        <label>
+          <input type="checkbox" id="s_${index}" checked> ${name}
+        </label>
+      `;
+    });
+  }
+
+  function generateReport() {
+    const stored = localStorage.getItem("students");
+    if (!stored) return alert("Save students first!");
+
+    const students = JSON.parse(stored);
+    const date = document.getElementById("date").value;
+    const topic = document.getElementById("topic").value;
+    const alternate = document.getElementById("alternate").value
+      .split(",")
+      .map(n => n.trim())
+      .filter(n => n !== "");
+
+    const attendees = [];
+    const absentees = [];
+
+    students.forEach((name, i) => {
+      const checked = document.getElementById(`s_${i}`).checked;
+      checked ? attendees.push(name) : absentees.push(name);
+    });
+
+    const format = arr => arr.length ? arr.map(n => `👤 ${n}`).join("\n") : "None";
+
+    const report = `
+🌟 Session Report 🌟
+📅 Date: ${date}
+🖥 Batch: ${batch}
+🕒 Time: 3:00 PM – 4:00 PM
+👨‍🏫 Trainer: ${trainer}
+🤝 Coordinator: ${coordinator}
+📝 Report Prepared by: ${preparedBy}
+
+🗣 Activity: ${topic}
+
+
+------------------------------------
+✅ Attendees:
+${format(attendees)}
+
+------------------------------------
+🚫 Absentees:
+${format(absentees)}
+
+${alternate.length ? `------------------------------------
+🔁 Alternate Session:
+${format(alternate)}` : ""}
+
+------------------------------------
+🎯 Summary:
+This session helped participants improve communication, reasoning, and engagement through active participation.
+`;
+
+    document.getElementById("output-box").innerText = report;
+  }
+
+  function copyReport() {
+    const text = document.getElementById("output-box").innerText;
+    if (!text.trim()) return alert("Generate the report first.");
+
+    navigator.clipboard.writeText(text);
+    alert("Copied! Paste directly into WhatsApp 🚀");
+  }
+
+  loadStudents();
+</script>
+
+</body>
+</html>
