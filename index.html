@@ -71,6 +71,8 @@
 <div class="section">
   <label>Topic / Activity Name:</label>
   <input type="text" id="topic" placeholder="Debate / Presentation / etc">
+  <label style="margin-top: 10px; display: block;">Topic Description (Optional):</label>
+  <textarea id="topicDescription" placeholder="Brief description of the topic/activity" rows="3"></textarea>
 </div>
 
 <div class="section">
@@ -84,6 +86,11 @@
 <div class="section">
   <label>Alternate Session (Optional):</label>
   <textarea id="alternate" placeholder="Name1, Name2"></textarea>
+</div>
+
+<div class="section">
+  <label>TL;DV Meeting Link (Optional):</label>
+  <input type="text" id="tldvLink" placeholder="https://tldv.io/meeting/...">
 </div>
 
 <button onclick="generateReport()">Generate Report</button>
@@ -137,6 +144,8 @@
     const students = JSON.parse(stored);
     const date = document.getElementById("date").value;
     const topic = document.getElementById("topic").value;
+    const topicDescription = document.getElementById("topicDescription").value;
+    const tldvLink = document.getElementById("tldvLink").value.trim();
     const alternate = document.getElementById("alternate").value
       .split(",")
       .map(n => n.trim())
@@ -149,8 +158,17 @@
       const checked = document.getElementById(`s_${i}`).checked;
       checked ? attendees.push(name) : absentees.push(name);
     });
+    
+    // Add alternate attendees to the main attendees list
+    if (alternate.length > 0) {
+      attendees.push(...alternate);
+    }
 
-    const format = arr => arr.length ? arr.map(n => `👤 ${n}`).join("\n") : "None";
+    const format = (arr, isAbsentee = false) => {
+      if (!arr.length) return "None";
+      const emoji = isAbsentee ? "🚫" : "👤";
+      return arr.map(n => `${emoji} ${n}`).join("\n");
+    };
 
     const report = `
 🌟 Session Report 🌟
@@ -162,23 +180,18 @@
 📝 Report Prepared by: ${preparedBy}
 
 🗣 Activity: ${topic}
-
+${topicDescription ? `📝 Description: ${topicDescription}
+` : ''}
 
 ------------------------------------
 ✅ Attendees:
 ${format(attendees)}
-
 ------------------------------------
 🚫 Absentees:
-${format(absentees)}
+${format(absentees, true)}
 
-${alternate.length ? `------------------------------------
-🔁 Alternate Session:
-${format(alternate)}` : ""}
 
-------------------------------------
-🎯 Summary:
-This session helped participants improve communication, reasoning, and engagement through active participation.
+${tldvLink ? `🎥 TL;DV Recording: ${tldvLink}` : ''}
 `;
 
     document.getElementById("output-box").innerText = report;
