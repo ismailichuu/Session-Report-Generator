@@ -1,8 +1,35 @@
-
 const batch = "BCR73 - Group 2";
 const trainer = "Hrithik P S";
-const coordinator = "Prithiviraj";
+let coordinator = localStorage.getItem('coordinatorName') || "";
 const preparedBy = "Mohammed Ismail C N";
+
+// Initialize coordinator name when page loads
+function initializePage() {
+    // Set initial coordinator name if saved
+    const coordinatorInput = document.getElementById('coordinator');
+    if (coordinatorInput && coordinator) {
+        coordinatorInput.value = coordinator;
+    }
+    
+    // Load students
+    loadStudents();
+}
+
+// Save coordinator name
+function saveCoordinator() {
+    const name = document.getElementById('coordinator').value.trim();
+    if (!name) {
+        showToast('Invalid Input', 'Please enter a coordinator name.', 'error');
+        return;
+    }
+    
+    coordinator = name;
+    localStorage.setItem('coordinatorName', coordinator);
+    showToast('Success!', 'Coordinator name saved.', 'success');
+}
+
+// Start the application when the page loads
+document.addEventListener('DOMContentLoaded', initializePage);
 
 const defaultStudents = [
     "Aboobacker HM", "Anushma Radhakrishnan", "Ayisha Safa N", "Binzy",
