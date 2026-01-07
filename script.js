@@ -1,5 +1,5 @@
-const batch = "BCR73 - Group 2";
-const trainer = "Hrithik P S";
+const batch = "BCR73";
+const trainer = "Hrithik P S & Sarang T P";
 let coordinator = localStorage.getItem('coordinatorName') || "";
 const preparedBy = "Mohammed Ismail C N";
 
