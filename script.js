@@ -32,12 +32,14 @@ function saveCoordinator() {
 document.addEventListener('DOMContentLoaded', initializePage);
 
 const defaultStudents = [
-    "Aboobacker HM", "Anushma Radhakrishnan", "Ayisha Safa N", "Binzy",
-    "Fathima Shifana", "Ghanashyam Govind", "Gayathry E S", "Jabir C",
-    "Jees Vincent", "Mohammed Ismail C N", "Nayana Benny", "Praveen M P",
-    "Prithviraj P U", "Thamir", "Mohammed Shibil", "Yadhav A V",
-    "Muhammed Aflah", "Shibin K P", "Muhammed Nihal", "Athira Muralidharan",
-    "Thasni Sidhiq", "Haris Hamid", "Fathima Zuhra"
+    "Aboobacker HM", "Achilles Jilson", "Adhil", "Adithyan", "Akhila", 
+    "Amal Benny", "Ambily", "Anson", "Anusha Shine", "Anushma Radhakrishnan", 
+    "Arjun", "Athira Muralidharan", "Ayisha Safa N", "Binzy", "Deeja", "Devi", 
+    "Fathima Shifana", "Fathima Zuhra", "Gayathry E S", "Ghanashyam Govind", 
+    "Haris Hamid", "Jabir C", "Jees Vincent", "M Shamual", "Mohammed Ismail C N", 
+    "Mohammed Shibil", "Muhammed Aflah", "Muhammed Nihal", "Nayana Benny", 
+    "Praveen M P", "Prithviraj P U", "Rahul Raj", "Sabin VV", "Shabna", "Shibin K P", 
+    "Thamir", "Thasni Sidhiq", "Varun jp", "Yadhav A V"
 ];
 
 const students = defaultStudents;
@@ -147,9 +149,11 @@ ${topicDescription ? `📝 Description: ${topicDescription}
 ` : ''}
 ------------------------------------
 ✅ Attendees:
+
 ${format(attendees)}
 ------------------------------------
 🚫 Absentees:
+
 ${format(absentees, true)}
 
 
