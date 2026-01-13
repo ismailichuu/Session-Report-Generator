@@ -1,7 +1,7 @@
 const batch = "BCR73";
 const trainer = "Hrithik P S & Sarang T P";
 let coordinator = localStorage.getItem('coordinatorName') || "";
-const preparedBy = "Mohammed Ismail C N";
+const preparedBy = localStorage.getItem('reporterName') || "";
 
 // Initialize coordinator name when page loads
 function initializePage() {
@@ -13,6 +13,19 @@ function initializePage() {
     
     // Load students
     loadStudents();
+}
+
+//Save reporter name
+function saveReporter() {
+    const name = document.getElementById('reporter').value.trim();
+    if (!name) {
+        showToast('Invalid Input', 'Please enter a reporter name.', 'error');
+        return;
+    }
+    
+    reporter = name;
+    localStorage.setItem('reporterName', reporter);
+    showToast('Success!', 'Reporter name saved.', 'success');
 }
 
 // Save coordinator name
