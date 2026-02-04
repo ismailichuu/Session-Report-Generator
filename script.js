@@ -1,5 +1,5 @@
 const batch = "BCR73";
-const trainer = "Hrithik P S & Sarang T P";
+const trainer = "Anjana";
 let coordinator = localStorage.getItem('coordinatorName') || "";
 const preparedBy = localStorage.getItem('reporterName') || "";
 
