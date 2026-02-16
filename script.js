@@ -1,5 +1,5 @@
 const batch = "BCR73";
-const trainer = "Anjana";
+const trainer = "Shabtha";
 let coordinator = localStorage.getItem('coordinatorName') || "";
 const preparedBy = localStorage.getItem('reporterName') || "";
 
@@ -52,7 +52,7 @@ const defaultStudents = [
     "Haris Hamid", "Jabir C", "Jees Vincent", "M Shamual", "Mohammed Ismail C N", 
     "Mohammed Shibil", "Muhammed Aflah", "Muhammed Nihal", "Nayana Benny", 
     "Praveen M P", "Prithviraj P U", "Rahul Raj", "Sabin VV", "Shabna", "Shibin K P", 
-    "Thamir", "Thasni Sidhiq", "Varun jp", "Yadhav A V"
+    "Thamir", "Thasni Sidhiq", "Varun jp", "Yadhav A V", "Ayananth T S"
 ];
 
 const students = defaultStudents;
