@@ -1,71 +1,88 @@
 const batch = "BCR73";
-const trainer = "Shabtha";
-let coordinator = localStorage.getItem('coordinatorName') || "";
-const preparedBy = localStorage.getItem('reporterName') || "";
+let trainer = localStorage.getItem("trainerName") || "";
+let coordinator = localStorage.getItem("coordinatorName") || "Mohammed Ismail C N";
+let reporter = localStorage.getItem("reporterName") || "Mohammed Ismail C N";
 
-// Initialize coordinator name when page loads
 function initializePage() {
-    // Set initial coordinator name if saved
-    const coordinatorInput = document.getElementById('coordinator');
+    const trainerInput = document.getElementById("trainer");
+    const coordinatorInput = document.getElementById("coordinator");
+    const reporterInput = document.getElementById("reporter");
+
+    if (trainerInput && trainer) {
+        trainerInput.value = trainer;
+    }
+
     if (coordinatorInput && coordinator) {
         coordinatorInput.value = coordinator;
     }
-    
-    // Load students
+
+    if (reporterInput && reporter) {
+        reporterInput.value = reporter;
+    }
+
     loadStudents();
 }
 
-//Save reporter name
+function saveTrainer() {
+    const name = document.getElementById("trainer").value.trim();
+    if (!name) {
+        showToast("Invalid Input", "Please enter a trainer name.", "error");
+        return;
+    }
+
+    trainer = name;
+    localStorage.setItem("trainerName", trainer);
+    showToast("Success", "Trainer name saved.", "success");
+}
+
 function saveReporter() {
-    const name = document.getElementById('reporter').value.trim();
+    const name = document.getElementById("reporter").value.trim();
     if (!name) {
-        showToast('Invalid Input', 'Please enter a reporter name.', 'error');
+        showToast("Invalid Input", "Please enter a reporter name.", "error");
         return;
     }
-    
+
     reporter = name;
-    localStorage.setItem('reporterName', reporter);
-    showToast('Success!', 'Reporter name saved.', 'success');
+    localStorage.setItem("reporterName", reporter);
+    showToast("Success", "Reporter name saved.", "success");
 }
 
-// Save coordinator name
 function saveCoordinator() {
-    const name = document.getElementById('coordinator').value.trim();
+    const name = document.getElementById("coordinator").value.trim();
     if (!name) {
-        showToast('Invalid Input', 'Please enter a coordinator name.', 'error');
+        showToast("Invalid Input", "Please enter a coordinator name.", "error");
         return;
     }
-    
+
     coordinator = name;
-    localStorage.setItem('coordinatorName', coordinator);
-    showToast('Success!', 'Coordinator name saved.', 'success');
+    localStorage.setItem("coordinatorName", coordinator);
+    showToast("Success", "Coordinator name saved.", "success");
 }
 
-// Start the application when the page loads
-document.addEventListener('DOMContentLoaded', initializePage);
+document.addEventListener("DOMContentLoaded", initializePage);
 
 const defaultStudents = [
-    "Aboobacker HM", "Achilles Jilson", "Adhil", "Adithyan", "Akhila", 
-    "Amal Benny", "Ambily", "Anson", "Anusha Shine", "Anushma Radhakrishnan", 
-    "Arjun", "Athira Muralidharan", "Ayisha Safa N", "Binzy", "Deeja", "Devi", 
-    "Fathima Shifana", "Fathima Zuhra", "Gayathry E S", "Ghanashyam Govind", 
-    "Haris Hamid", "Jabir C", "Jees Vincent", "M Shamual", "Mohammed Ismail C N", 
-    "Mohammed Shibil", "Muhammed Aflah", "Muhammed Nihal", "Nayana Benny", 
-    "Praveen M P", "Prithviraj P U", "Rahul Raj", "Sabin VV", "Shabna", "Shibin K P", 
-    "Thamir", "Thasni Sidhiq", "Varun jp", "Yadhav A V", "Ayananth T S"
+    "Aboobacker HM", "Achilles Jilson", "Adhil", "Adithyan", "Akhila",
+    "Amal Benny", "Ambily", "Anson", "Anusha Shine", "Anushma Radhakrishnan",
+    "Arjun", "Athira Muralidharan", "Ayisha Safa N", "Binzy", "Deeja", "Devi",
+    "Fathima Shifana", "Fathima Zuhra", "Gayathry E S", "Ghanashyam Govind",
+    "Haris Hamid", "Jabir C", "Jees Vincent", "M Shamual", "Mohammed Ismail C N",
+    "Mohammed Shibil", "Muhammed Aflah", "Muhammed Nihal", "Nayana Benny",
+    "Praveen M P", "Prithviraj P U", "Rahul Raj", "Sabin VV", "Shabna", "Shibin K P",
+    "Thamir", "Thasni Sidhiq", "Varun jp", "Yadhav A V", "Ayananth T S", "Akshay V P"
 ];
 
-const students = defaultStudents;
+const sortNames = (names) => names.sort((a, b) => a.localeCompare(b));
+const students = sortNames([...defaultStudents]);
 
-// Toast notification function
-function showToast(title, message, type = 'info') {
-    const toast = document.createElement('div');
+function showToast(title, message, type = "info") {
+    const toast = document.createElement("div");
     toast.className = `toast ${type}`;
 
     const icons = {
-        success: '✅',
-        error: '❌',
-        info: 'ℹ️'
+        success: "OK",
+        error: "!",
+        info: "i"
     };
 
     toast.innerHTML = `
@@ -74,37 +91,37 @@ function showToast(title, message, type = 'info') {
         <div class="toast-title">${title}</div>
         <div class="toast-message">${message}</div>
       </div>
-      <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      <button class="toast-close" onclick="this.parentElement.remove()">x</button>
     `;
 
     document.body.appendChild(toast);
 
     setTimeout(() => {
-        toast.classList.add('hiding');
-        setTimeout(() => toast.remove(), 300);
+        toast.classList.add("hiding");
+        setTimeout(() => toast.remove(), 250);
     }, 3000);
 }
 
 function saveStudents() {
     const names = document.getElementById("studentInput").value
         .split(",")
-        .map(n => n.trim())
-        .filter(n => n !== "");
+        .map((n) => n.trim())
+        .filter((n) => n !== "");
 
     if (names.length === 0) {
-        showToast('Invalid Input', 'Please enter valid student names.', 'error');
+        showToast("Invalid Input", "Please enter valid student names.", "error");
         return;
     }
 
     students.length = 0;
-    students.push(...names);
+    students.push(...sortNames(names));
     loadStudents();
-    showToast('Success!', `${names.length} students saved successfully.`, 'success');
+    showToast("Success", `${names.length} students saved successfully.`, "success");
 }
 
 function loadStudents() {
     const container = document.getElementById("students");
-    container.innerHTML = "<div class='student-header'>Select Present Students:</div>";
+    container.innerHTML = "<div class='student-header'>Select Present Students</div>";
 
     students.forEach((name, index) => {
         container.innerHTML += `
@@ -116,19 +133,41 @@ function loadStudents() {
 }
 
 function generateReport() {
-    if (students.length === 0) {
-        showToast('No Students', 'Please save students first!', 'error');
+    const trainerValue = document.getElementById("trainer").value.trim();
+    const coordinatorValue = document.getElementById("coordinator").value.trim();
+    const reporterValue = document.getElementById("reporter").value.trim();
+    const date = document.getElementById("date").value.trim();
+    const topic = document.getElementById("topic").value.trim();
+    const topicDescription = document.getElementById("topicDescription").value.trim();
+    const studentInputValue = document.getElementById("studentInput").value.trim();
+    const alternateValue = document.getElementById("alternate").value.trim();
+    const tldvLink = document.getElementById("tldvLink").value.trim();
+
+    const missingFields = [];
+    if (!trainerValue) missingFields.push("Trainer Name");
+    if (!coordinatorValue) missingFields.push("Coordinator Name");
+    if (!reporterValue) missingFields.push("Report Prepared By");
+    if (!date) missingFields.push("Session Date");
+    if (!topic) missingFields.push("Topic / Activity");
+    if (!topicDescription) missingFields.push("Topic Description");
+    if (students.length === 0) missingFields.push("Students List");
+
+    if (missingFields.length > 0) {
+        showToast("Missing Fields", `Please fill all fields: ${missingFields.join(", ")}`, "error");
         return;
     }
 
-    const date = document.getElementById("date").value || "Not specified";
-    const topic = document.getElementById("topic").value || "General Session";
-    const topicDescription = document.getElementById("topicDescription").value;
-    const tldvLink = document.getElementById("tldvLink").value.trim();
-    const alternate = document.getElementById("alternate").value
+    trainer = trainerValue;
+    coordinator = coordinatorValue;
+    reporter = reporterValue;
+    localStorage.setItem("trainerName", trainer);
+    localStorage.setItem("coordinatorName", coordinator);
+    localStorage.setItem("reporterName", reporter);
+
+    const alternate = alternateValue
         .split(",")
-        .map(n => n.trim())
-        .filter(n => n !== "");
+        .map((n) => n.trim())
+        .filter((n) => n !== "");
 
     const attendees = [];
     const absentees = [];
@@ -144,48 +183,43 @@ function generateReport() {
 
     const format = (arr, isAbsentee = false) => {
         if (!arr.length) return "None";
-        const emoji = isAbsentee ? "🚫" : "👤";
-        return arr.map(n => `${emoji} ${n}`).join("\n");
+        const marker = isAbsentee ? "🚫" : "👤";
+        return arr.map((n) => `${marker} ${n}`).join("\n");
     };
 
     const report = `
 🌟 Session Report 🌟
 📅 Date: ${date}
 🖥 Batch: ${batch}
-🕒 Time: 3:00 PM – 4:00 PM
+🕒 Time: 3:00 PM - 4:00 PM
 👨‍🏫 Trainer: ${trainer}
 🤝 Coordinator: ${coordinator}
-📝 Report Prepared by: ${preparedBy}
+📝 Report Prepared by: ${reporter}
 
 🗣 Activity: ${topic}
-${topicDescription ? `📝 Description: ${topicDescription}
-` : ''}
+${topicDescription ? `📝 Description: ${topicDescription}\n` : ""}
 ------------------------------------
 ✅ Attendees:
 
 ${format(attendees)}
-------------------------------------
-🚫 Absentees:
 
-${format(absentees, true)}
-
-
-${tldvLink ? `🎥 TL;DV Recording: ${tldvLink}` : ''}
+${tldvLink ? `🎥 TL;DV Recording: ${tldvLink}` : ""}
 `;
 
     document.getElementById("output-box").innerText = report;
-    showToast('Report Generated!', 'Your session report is ready.', 'success');
+    showToast("Report Generated", "Your session report is ready.", "success");
 }
 
 function copyReport() {
     const text = document.getElementById("output-box").innerText;
     if (!text.trim()) {
-        showToast('Nothing to Copy', 'Please generate the report first!', 'error');
+        showToast("Nothing to Copy", "Please generate the report first.", "error");
         return;
     }
 
     navigator.clipboard.writeText(text);
-    showToast('Copied!', 'Report copied to clipboard. Ready to paste! 🚀', 'success');
+    showToast("Copied", "Report copied to clipboard.", "success");
 }
 
 loadStudents();
+

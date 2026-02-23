@@ -4,79 +4,124 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session Report Generator</title>
-<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
-
 <body>
+<div class="ambient ambient-a"></div>
+<div class="ambient ambient-b"></div>
 
-<div class="container">
-  <div class="header">
-    <h1>📋 Session Report Generator</h1>
-    <p>Create professional session reports in seconds</p>
-  </div>
+<div class="app-shell">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Session Ops</p>
+      <h1>Session Report Generator</h1>
+      <p class="hero-copy">Create polished session reports with attendance, alternates, and recording links in one workflow.</p>
+    </div>
+    <div class="hero-pills">
+      <span class="pill">Fast reporting</span>
+      <span class="pill">Attendance tracking</span>
+      <span class="pill">Share-ready output</span>
+    </div>
+  </header>
 
-  <div class="content">
-    <div class="section">
-      <div class="section-title">👤 Coordinator Name</div>
-      <div class="input-group">
-        <input type="text" id="coordinator" placeholder="e.g., Mohammed Ismail">
-        <button class="btn-secondary" onclick="saveCoordinator()">💾 Save</button>
+  <main class="app-grid">
+    <section class="workspace">
+      <div class="block">
+        <div class="block-title">People</div>
+        <div class="field-grid two-col">
+          <section class="section">
+            <div class="section-title">Trainer Name</div>
+            <div class="input-group">
+              <input type="text" id="trainer" placeholder="e.g., Shabthab P V">
+              <button class="btn-secondary" onclick="saveTrainer()">Save</button>
+            </div>
+            <div class="input-hint">Store this for future reports</div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">Coordinator Name</div>
+            <div class="input-group">
+              <input type="text" id="coordinator" placeholder="e.g., Mohammed Ismail">
+              <button class="btn-secondary" onclick="saveCoordinator()">Save</button>
+            </div>
+            <div class="input-hint">Store this for future reports</div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">Report Prepared By</div>
+            <div class="input-group">
+              <input type="text" id="reporter" placeholder="e.g., Mohammed Ismail">
+              <button class="btn-secondary" onclick="saveReporter()">Save</button>
+            </div>
+            <div class="input-hint">Store this for future reports</div>
+          </section>
+        </div>
       </div>
-      <div class="input-hint">Save your name for future use</div>
-    </div>
 
-    <div class="section">
-      <div class="section-title">👤 Report Prepared By</div>
-      <div class="input-group">
-        <input type="text" id="reporter" placeholder="e.g., Mohammed Ismail">
-        <button class="btn-secondary" onclick="saveReporter()">💾 Save</button>
+      <div class="block">
+        <div class="block-title">Session Details</div>
+        <div class="field-grid two-col">
+          <section class="section">
+            <div class="section-title">Session Date</div>
+            <input type="date" id="date">
+          </section>
+
+          <section class="section">
+            <div class="section-title">Recording Link</div>
+            <input type="text" id="tldvLink" placeholder="https://tldv.io/meeting/...">
+            <div class="input-hint">TL;DV or other meeting recording link (optional)</div>
+          </section>
+        </div>
+
+        <section class="section top-gap">
+          <div class="section-title">Topic / Activity</div>
+          <input type="text" id="topic" placeholder="e.g., Debate on AI Ethics">
+          <textarea id="topicDescription" placeholder="Brief description of the topic or activity (optional)" rows="2"></textarea>
+        </section>
       </div>
-      <div class="input-hint">Save your name for future use</div>
-    </div>
 
-    <div class="section">
-      <div class="section-title">� Session Date</div>
-      <input type="date" id="date">
-    </div>
+      <div class="block">
+        <div class="block-title">Attendance</div>
 
-    <div class="section">
-      <div class="section-title">🗣 Topic / Activity</div>
-      <input type="text" id="topic" placeholder="e.g., Debate on AI Ethics">
-      <textarea id="topicDescription" placeholder="Brief description of the topic or activity (optional)" rows="2" style="margin-top: 10px;"></textarea>
-    </div>
+        <section class="section">
+          <div class="section-title">Manage Students</div>
+          <textarea id="studentInput" placeholder="Enter student names separated by commas"></textarea>
+          <div class="input-hint">First time here? Add your roster once, then mark attendance below.</div>
+          <button class="btn-secondary roster-btn" onclick="saveStudents()">Save Students</button>
+        </section>
 
-    <div class="section">
-      <div class="section-title">👥 Manage Students</div>
-      <textarea id="studentInput" placeholder="Enter student names separated by commas"></textarea>
-      <div class="input-hint">First time? Add your student list here</div>
-      <button class="btn-secondary" onclick="saveStudents()">💾 Save Students</button>
-    </div>
+        <section class="section top-gap">
+          <div class="section-title">Mark Attendance</div>
+          <div id="students"></div>
+        </section>
 
-    <div class="section">
-      <div class="section-title">✅ Mark Attendance</div>
-      <div id="students"></div>
-    </div>
+        <section class="section top-gap">
+          <div class="section-title">Alternate Attendees</div>
+          <input type="text" id="alternate" placeholder="e.g., John Doe, Jane Smith">
+          <div class="input-hint">Students from other groups (optional)</div>
+        </section>
+      </div>
+    </section>
 
-    <div class="section">
-      <div class="section-title">🔄 Alternate Attendees</div>
-      <input type="text" id="alternate" placeholder="e.g., John Doe, Jane Smith">
-      <div class="input-hint">Students from other groups (optional)</div>
-    </div>
+    <aside class="preview-column">
+      <section class="section output-panel">
+        <div class="section-title">Generated Output</div>
+        <div id="output-box"></div>
+      </section>
 
-    <div class="section">
-      <div class="section-title">🎥 Recording Link</div>
-      <input type="text" id="tldvLink" placeholder="https://tldv.io/meeting/...">
-      <div class="input-hint">TL;DV or other meeting recording link (optional)</div>
-    </div>
+      <div class="actions">
+        <button class="btn-primary" onclick="generateReport()">Generate Report</button>
+        <button class="btn-success" onclick="copyReport()">Copy to Clipboard</button>
+      </div>
 
-    <div class="actions">
-      <button class="btn-primary" onclick="generateReport()">✨ Generate Report</button>
-      <button class="btn-success" onclick="copyReport()">📋 Copy to Clipboard</button>
-    </div>
-
-    <div id="output-box"></div>
-  </div>
+      <section class="mini-note">
+        <h3>Tip</h3>
+        <p>Save names once, then generate and copy your report after marking attendance.</p>
+      </section>
+    </aside>
+  </main>
 </div>
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 </body>
 </html>
