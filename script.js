@@ -132,6 +132,16 @@ function loadStudents() {
     });
 }
 
+function parseNameList(rawText) {
+    if (!rawText) return [];
+    const parts = rawText
+        .split(/[\n,;]+/)
+        .map((n) => n.trim())
+        .filter((n) => n !== "");
+
+    return [...new Set(parts)];
+}
+
 function generateReport() {
     const trainerValue = document.getElementById("trainer").value.trim();
     const coordinatorValue = document.getElementById("coordinator").value.trim();
@@ -164,10 +174,7 @@ function generateReport() {
     localStorage.setItem("coordinatorName", coordinator);
     localStorage.setItem("reporterName", reporter);
 
-    const alternate = alternateValue
-        .split(",")
-        .map((n) => n.trim())
-        .filter((n) => n !== "");
+    const alternate = parseNameList(alternateValue);
 
     const attendees = [];
     const absentees = [];
