@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Session Report Generator</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="ambient ambient-a"></div>
@@ -86,9 +86,9 @@
 
         <section class="section">
           <div class="section-title">Manage Students</div>
-          <textarea id="studentInput" placeholder="Enter student names separated by commas"></textarea>
-          <div class="input-hint">First time here? Add your roster once, then mark attendance below.</div>
-          <button class="btn-secondary roster-btn" onclick="saveStudents()">Save Students</button>
+          <textarea id="studentInput" placeholder="Enter one student or paste a list separated by commas, semicolons, or new lines"></textarea>
+          <div class="input-hint">Add one student or a full list. Duplicate names are skipped automatically.</div>
+          <button class="btn-secondary roster-btn" onclick="saveStudents()">Add Student(s)</button>
         </section>
 
         <section class="section top-gap">
@@ -126,6 +126,16 @@
     </aside>
   </main>
 </div>
-<script src="script.js?v=3"></script>
+<div class="modal-backdrop" id="deleteStudentModal" hidden>
+  <section class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="deleteStudentTitle">
+    <div class="section-title" id="deleteStudentTitle">Remove Student</div>
+    <p id="deleteStudentMessage">Are you sure? This student will be permanently removed from the saved list.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" type="button" onclick="closeDeleteStudentModal()">Cancel</button>
+      <button class="btn-danger" type="button" onclick="confirmRemoveStudent()">Remove</button>
+    </div>
+  </section>
+</div>
+<script src="script.js?v=5"></script>
 </body>
 </html>

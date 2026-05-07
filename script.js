@@ -2,6 +2,7 @@ const batch = "BCR73";
 let trainer = localStorage.getItem("trainerName") || "";
 let coordinator = localStorage.getItem("coordinatorName") || "Mohammed Ismail C N";
 let reporter = localStorage.getItem("reporterName") || "Mohammed Ismail C N";
+let pendingStudentRemoveIndex = null;
 
 function initializePage() {
     const trainerInput = document.getElementById("trainer");
@@ -73,7 +74,12 @@ const defaultStudents = [
 ];
 
 const sortNames = (names) => names.sort((a, b) => a.localeCompare(b));
-const students = sortNames([...defaultStudents]);
+const savedStudents = JSON.parse(localStorage.getItem("studentsList") || "null");
+const students = sortNames(Array.isArray(savedStudents) && savedStudents.length ? savedStudents : [...defaultStudents]);
+
+function saveStudentList() {
+    localStorage.setItem("studentsList", JSON.stringify(students));
+}
 
 function showToast(title, message, type = "info") {
     const toast = document.createElement("div");
@@ -103,32 +109,91 @@ function showToast(title, message, type = "info") {
 }
 
 function saveStudents() {
-    const names = document.getElementById("studentInput").value
-        .split(",")
-        .map((n) => n.trim())
-        .filter((n) => n !== "");
+    const input = document.getElementById("studentInput");
+    const names = parseNameList(input.value);
 
     if (names.length === 0) {
         showToast("Invalid Input", "Please enter valid student names.", "error");
         return;
     }
 
-    students.length = 0;
-    students.push(...sortNames(names));
+    const existingNames = new Set(students.map(normalizeName));
+    const newNames = names.filter((name) => !existingNames.has(normalizeName(name)));
+
+    if (newNames.length === 0) {
+        showToast("No New Students", "All entered students already exist in the list.", "info");
+        return;
+    }
+
+    students.push(...newNames);
+    sortNames(students);
+    saveStudentList();
+    input.value = "";
     loadStudents();
-    showToast("Success", `${names.length} students saved successfully.`, "success");
+    showToast("Students Added", `${newNames.length} student${newNames.length === 1 ? "" : "s"} added to the list.`, "success");
+}
+
+function openDeleteStudentModal(index) {
+    pendingStudentRemoveIndex = index;
+    const modal = document.getElementById("deleteStudentModal");
+    const message = document.getElementById("deleteStudentMessage");
+    message.textContent = `Are you sure? ${students[index]} will be permanently removed from the saved student list.`;
+    modal.hidden = false;
+}
+
+function closeDeleteStudentModal() {
+    pendingStudentRemoveIndex = null;
+    document.getElementById("deleteStudentModal").hidden = true;
+}
+
+function confirmRemoveStudent() {
+    if (pendingStudentRemoveIndex === null) return;
+    removeStudent(pendingStudentRemoveIndex);
+    closeDeleteStudentModal();
+}
+
+function removeStudent(index) {
+    const removedName = students.splice(index, 1)[0];
+    saveStudentList();
+    loadStudents();
+    showToast("Student Removed", `${removedName} removed from the list.`, "success");
 }
 
 function loadStudents() {
     const container = document.getElementById("students");
-    container.innerHTML = "<div class='student-header'>Select Present Students</div>";
+    container.innerHTML = "";
+
+    const header = document.createElement("div");
+    header.className = "student-header";
+    header.textContent = "Select Present Students";
+    container.appendChild(header);
 
     students.forEach((name, index) => {
-        container.innerHTML += `
-        <label>
-          <input type="checkbox" id="s_${index}" checked> ${name}
-        </label>
-      `;
+        const row = document.createElement("div");
+        row.className = "student-row";
+
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `s_${index}`;
+        checkbox.checked = true;
+
+        const nameText = document.createElement("span");
+        nameText.textContent = name;
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "student-remove";
+        removeButton.textContent = "x";
+        removeButton.title = `Remove ${name}`;
+        removeButton.setAttribute("aria-label", `Remove ${name}`);
+        removeButton.onclick = () => openDeleteStudentModal(index);
+
+        label.appendChild(checkbox);
+        label.appendChild(nameText);
+        row.appendChild(label);
+        row.appendChild(removeButton);
+        container.appendChild(row);
     });
 }
 

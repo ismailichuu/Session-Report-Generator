@@ -278,6 +278,17 @@ button:active {
     border-color: #53709b;
 }
 
+.btn-danger {
+    background: #7e2d43;
+    color: #fff2f5;
+    border: 1px solid #a14b62;
+}
+
+.btn-danger:hover {
+    background: #963650;
+    border-color: #c5627c;
+}
+
 .roster-btn {
     margin-top: 10px;
 }
@@ -308,21 +319,35 @@ button:active {
     margin-bottom: 2px;
 }
 
-#students label {
+.student-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     border: 1px solid #314156;
     background: #101927;
     border-radius: 10px;
-    padding: 9px 10px;
+    padding: 8px 8px 8px 10px;
     font-size: 13px;
     color: #dce8f5;
-    cursor: pointer;
     transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
 }
 
-#students label:hover {
+.student-row label {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.student-row label span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.student-row:hover {
     transform: translateX(2px);
     border-color: #4c688d;
     background: #152237;
@@ -332,6 +357,24 @@ button:active {
     width: 15px;
     height: 15px;
     accent-color: var(--accent);
+}
+
+.student-remove {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 8px;
+    background: #172235;
+    color: #aebed1;
+    border: 1px solid #405371;
+    line-height: 1;
+}
+
+.student-remove:hover {
+    background: #2d1f2a;
+    color: #ffd2dc;
+    border-color: #88566a;
 }
 
 .output-panel {
@@ -452,6 +495,42 @@ button:active {
 
 .toast.hiding {
     animation: slideOut 220ms ease forwards;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgba(4, 7, 12, 0.68);
+}
+
+.modal-backdrop[hidden] {
+    display: none;
+}
+
+.confirm-modal {
+    width: min(390px, 100%);
+    background: var(--card-solid);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    box-shadow: var(--shadow-xl);
+    padding: 16px;
+}
+
+.confirm-modal p {
+    color: #d5e1ef;
+    font-size: 14px;
+    line-height: 1.45;
+    margin-bottom: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
 }
 
 @keyframes slideIn {
