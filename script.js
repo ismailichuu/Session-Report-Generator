@@ -132,6 +132,202 @@ function loadStudents() {
     });
 }
 
+function removeBatchName(name) {
+    const batchPattern = new RegExp(`\\b${batch}\\b`, "gi");
+    return (name || "")
+        .replace(batchPattern, "")
+        .replace(/\b[A-Z]{2,}\d+\b$/i, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function normalizeName(name) {
+    return removeBatchName(name)
+        .replace(/[^a-z0-9]/gi, "")
+        .toLowerCase();
+}
+
+function getNameParts(name) {
+    return removeBatchName(name)
+        .toLowerCase()
+        .replace(/'s\b/g, "")
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+}
+
+function isAutomatedAttendee(name) {
+    return /notetaker|note\s*taker|tldv\.io|recorder|transcriber/i.test(name || "");
+}
+
+function findRosterMatch(name) {
+    const normalized = normalizeName(name);
+    if (!normalized) return null;
+
+    const exactMatch = students.find((student) => normalizeName(student) === normalized);
+    if (exactMatch) return exactMatch;
+
+    const nameParts = getNameParts(name);
+    if (nameParts.length === 0) return null;
+
+    const possibleMatches = students.filter((student) => {
+        const studentParts = getNameParts(student);
+        const shorterLength = Math.min(nameParts.length, studentParts.length);
+
+        if (shorterLength === 0 || nameParts[0] !== studentParts[0]) {
+            return false;
+        }
+
+        for (let i = 1; i < shorterLength; i++) {
+            if (nameParts[i] !== studentParts[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    return possibleMatches.length === 1 ? possibleMatches[0] : null;
+}
+
+function parseDelimitedRows(text) {
+    const rows = [];
+    let row = [];
+    let value = "";
+    let insideQuotes = false;
+    const tabCount = (text.match(/\t/g) || []).length;
+    const commaCount = (text.match(/,/g) || []).length;
+    const delimiter = tabCount > commaCount ? "\t" : ",";
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+            value += '"';
+            i++;
+        } else if (char === '"') {
+            insideQuotes = !insideQuotes;
+        } else if (char === delimiter && !insideQuotes) {
+            row.push(value.trim());
+            value = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+            if (char === "\r" && nextChar === "\n") i++;
+            row.push(value.trim());
+            if (row.some((cell) => cell !== "")) rows.push(row);
+            row = [];
+            value = "";
+        } else {
+            value += char;
+        }
+    }
+
+    row.push(value.trim());
+    if (row.some((cell) => cell !== "")) rows.push(row);
+    return rows;
+}
+
+function getAttendanceNamesFromCsv(text) {
+    const rows = parseDelimitedRows(text);
+    const headerIndex = rows.findIndex((row) =>
+        row.some((cell) => cell.trim().toLowerCase() === "full name")
+    );
+
+    if (headerIndex >= 0) {
+        const header = rows[headerIndex].map((cell) => cell.trim().toLowerCase());
+        const nameColumnIndex = header.indexOf("full name");
+        return rows
+            .slice(headerIndex + 1)
+            .map((row) => row[nameColumnIndex] || "")
+            .filter(Boolean);
+    }
+
+    return rows
+        .map((row) => row[0] || "")
+        .filter((cell) => cell && !cell.startsWith("*") && normalizeName(cell));
+}
+
+function importAttendanceCsv(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        const trainerValue = document.getElementById("trainer").value.trim();
+        if (!trainerValue) {
+            showToast("Trainer Required", "Enter the trainer name before importing attendance.", "error");
+            event.target.value = "";
+            return;
+        }
+
+        const importedNames = getAttendanceNamesFromCsv(reader.result)
+            .map(removeBatchName)
+            .filter((name) => name && !isAutomatedAttendee(name));
+        const trainerName = normalizeName(trainerValue);
+        const alternateBox = document.getElementById("alternate");
+        const matchedRosterNames = new Set();
+        const seenImportedNames = new Set();
+        let matchedCount = 0;
+
+        importedNames.forEach((name) => {
+            const normalized = normalizeName(name);
+            if (!normalized || seenImportedNames.has(normalized) || normalized === trainerName) return;
+            seenImportedNames.add(normalized);
+
+            const matchedStudent = findRosterMatch(name);
+            if (matchedStudent) {
+                matchedRosterNames.add(normalizeName(matchedStudent));
+            }
+        });
+
+        students.forEach((name, index) => {
+            const checkbox = document.getElementById(`s_${index}`);
+            const isPresent = matchedRosterNames.has(normalizeName(name));
+            checkbox.checked = isPresent;
+            if (isPresent) matchedCount++;
+        });
+
+        const alternateNames = importedNames.filter((name, index, names) => {
+            const normalized = normalizeName(name);
+            return normalized &&
+                normalized !== trainerName &&
+                !findRosterMatch(name) &&
+                names.findIndex((item) => normalizeName(item) === normalized) === index;
+        });
+
+        const existingAlternates = parseNameList(alternateBox.value);
+        const existingNormalized = new Set(existingAlternates.map(normalizeName));
+        const cleanedExistingAlternates = existingAlternates.filter((name) =>
+            !isAutomatedAttendee(name) &&
+            normalizeName(name) !== trainerName &&
+            !findRosterMatch(name)
+        );
+        const cleanedExistingNormalized = new Set(cleanedExistingAlternates.map(normalizeName));
+        const newAlternates = alternateNames.filter((name) =>
+            !existingNormalized.has(normalizeName(name)) &&
+            !cleanedExistingNormalized.has(normalizeName(name))
+        );
+
+        if (cleanedExistingAlternates.length > 0 || newAlternates.length > 0) {
+            alternateBox.value = [...cleanedExistingAlternates, ...newAlternates].join(", ");
+            alternateBox.focus();
+        } else {
+            alternateBox.value = "";
+        }
+
+        const status = document.getElementById("attendanceImportStatus");
+        status.textContent = `Marked ${matchedCount} roster students as present. Added ${newAlternates.length} alternate attendee${newAlternates.length === 1 ? "" : "s"}.`;
+        showToast("Attendance Imported", `${matchedCount} students matched. ${newAlternates.length} moved to alternates.`, "success");
+        event.target.value = "";
+    };
+
+    reader.onerror = () => {
+        showToast("Import Failed", "Could not read the selected CSV file.", "error");
+        event.target.value = "";
+    };
+
+    reader.readAsText(file);
+}
+
 function parseNameList(rawText) {
     if (!rawText) return [];
     const parts = rawText

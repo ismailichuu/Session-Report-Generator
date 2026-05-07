@@ -288,6 +288,10 @@ button:active {
     font-size: 12px;
 }
 
+.attendance-import {
+    margin-bottom: 12px;
+}
+
 #students {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
